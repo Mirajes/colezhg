@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Burger.unity
     guid: 58eab99def7bd0f43ba4069095e70f80
+  - enabled: 1
+    path: Assets/Scenes/Coroutine.unity
+    guid: 749e48e109c3d8d48a61af7e68e0ccf3
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
