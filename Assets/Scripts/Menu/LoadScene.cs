@@ -14,7 +14,7 @@ public class LoadScene : MonoBehaviour
     }
 
     [SerializeField] private float _blackoutTime = 5f;
-    //[SerializeField] private bool _isRunning = false;
+    private bool _isRunning = false;
     private float _currentAlpha = 0f;
 
     [SerializeField] private GameObject _blackoutObj;
@@ -25,10 +25,13 @@ public class LoadScene : MonoBehaviour
     {
         _blackoutObj.SetActive(true);
         StartCoroutine(SceneBlackout());
+        StartCoroutine(SceneLightout());
+
     }
 
     private IEnumerator SceneBlackout()
     {
+        _isRunning = true;
 
         while (_currentAlpha != 1)
         {
@@ -39,19 +42,39 @@ public class LoadScene : MonoBehaviour
             _blackoutImage.color = new Color(0, 0, 0, _currentAlpha);
             yield return null;
         }
+        SceneManager.LoadScene("Coroutine");
+
+        _isRunning = false;
+        yield return null;
     }
 
+    private IEnumerator SceneLightout()
+    {
+        yield return new WaitUntil(() => _isRunning == false);
 
+        _isRunning = true;
+
+        while (_currentAlpha != 0)
+        {
+            _currentAlpha -= Time.deltaTime / _blackoutTime;
+            if (_currentAlpha < 0)
+                _currentAlpha = 0;
+
+            _blackoutImage.color = new Color(0, 0, 0, _currentAlpha);
+            yield return null;
+        }
+
+        _isRunning = false;
+        yield return null;
+    }
 
     private void Awake()
     {
         if (Instance == null)
             Instance = this;
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
+        else 
+            Destroy(Instance);
+
 
         DontDestroyOnLoad(Instance);
     }
