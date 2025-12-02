@@ -18,20 +18,50 @@ public class LoadScene : MonoBehaviour
     private float _currentAlpha = 0f;
 
     [SerializeField] private GameObject _blackoutObj;
-    [SerializeField] private Image _blackoutImage;
+    private Image _blackoutImage;
 
 
     public void InitBlackout()
     {
-        _blackoutObj.SetActive(true);
         StartCoroutine(SceneBlackout());
         StartCoroutine(SceneLightout());
 
     }
 
+
+    private void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else 
+            Destroy(Instance);
+
+
+        DontDestroyOnLoad(Instance);
+
+        _blackoutImage = _blackoutObj.GetComponent<Image>();
+    }
+
+
+    private void OnEnable()
+    {
+        SceneManager.activeSceneChanged += OnChangeScene;
+    }
+
+    private void OnChangeScene(Scene arg0, Scene arg1)
+    {
+            
+    }
+
+
+
+
+
+
     private IEnumerator SceneBlackout()
     {
         _isRunning = true;
+        _blackoutObj.SetActive(true);
 
         while (_currentAlpha != 1)
         {
@@ -65,28 +95,7 @@ public class LoadScene : MonoBehaviour
         }
 
         _isRunning = false;
+        _blackoutObj.SetActive(false);
         yield return null;
-    }
-
-    private void Awake()
-    {
-        if (Instance == null)
-            Instance = this;
-        else 
-            Destroy(Instance);
-
-
-        DontDestroyOnLoad(Instance);
-    }
-
-
-    private void OnEnable()
-    {
-        SceneManager.activeSceneChanged += OnChangeScene;
-    }
-
-    private void OnChangeScene(Scene arg0, Scene arg1)
-    {
-
     }
 }
