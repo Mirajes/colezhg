@@ -17,8 +17,7 @@ public class LoadScene : MonoBehaviour
     private bool _isRunning = false;
     private float _currentAlpha = 0f;
 
-    [SerializeField] private GameObject _blackoutObj;
-    private Image _blackoutImage;
+    [SerializeField] private Image _blackoutImage;
 
 
     public void InitBlackout()
@@ -38,8 +37,6 @@ public class LoadScene : MonoBehaviour
 
 
         DontDestroyOnLoad(Instance);
-
-        _blackoutImage = _blackoutObj.GetComponent<Image>();
     }
 
 
@@ -50,7 +47,8 @@ public class LoadScene : MonoBehaviour
 
     private void OnChangeScene(Scene arg0, Scene arg1)
     {
-            
+        if (arg1.name == "Coroutine")
+            _isRunning = false;
     }
 
 
@@ -61,7 +59,7 @@ public class LoadScene : MonoBehaviour
     private IEnumerator SceneBlackout()
     {
         _isRunning = true;
-        _blackoutObj.SetActive(true);
+        Image mask = Instantiate(_blackoutImage, FindFirstObjectByType<Canvas>().transform);
 
         while (_currentAlpha != 1)
         {
@@ -69,19 +67,18 @@ public class LoadScene : MonoBehaviour
             if (_currentAlpha > 1)
                 _currentAlpha = 1;
 
-            _blackoutImage.color = new Color(0, 0, 0, _currentAlpha);
+            mask.color = new Color(0, 0, 0, _currentAlpha);
             yield return null;
         }
         SceneManager.LoadScene("Coroutine");
 
-        _isRunning = false;
         yield return null;
     }
 
     private IEnumerator SceneLightout()
     {
         yield return new WaitUntil(() => _isRunning == false);
-
+        Image mask = Instantiate(_blackoutImage, FindFirstObjectByType<Canvas>().transform);
         _isRunning = true;
 
         while (_currentAlpha != 0)
@@ -90,12 +87,12 @@ public class LoadScene : MonoBehaviour
             if (_currentAlpha < 0)
                 _currentAlpha = 0;
 
-            _blackoutImage.color = new Color(0, 0, 0, _currentAlpha);
+            mask.color = new Color(0, 0, 0, _currentAlpha);
             yield return null;
         }
 
         _isRunning = false;
-        _blackoutObj.SetActive(false);
+        Destroy(mask);
         yield return null;
     }
 }
