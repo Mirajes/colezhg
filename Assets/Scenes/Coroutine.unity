@@ -203,7 +203,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41
+  m_fontSize: 40.95
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -473,6 +473,13 @@ MonoBehaviour:
   _fireballButton: {fileID: 1502103681}
   _freezeButton: {fileID: 1174044885}
   _explosionButton: {fileID: 927096088}
+  _fireball: {fileID: 0}
+  _freeze: {fileID: 0}
+  _explosion: {fileID: 0}
+  _audioSource: {fileID: 0}
+  _fireballAudio: {fileID: 0}
+  _freezeAudio: {fileID: 0}
+  _explosionAudio: {fileID: 0}
 --- !u!1 &920462478
 GameObject:
   m_ObjectHideFlags: 0
@@ -1194,7 +1201,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41
+  m_fontSize: 50.05
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1330,7 +1337,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41
+  m_fontSize: 53.6
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
