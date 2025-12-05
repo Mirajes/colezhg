@@ -1,16 +1,23 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class EasyCoroutine : MonoBehaviour
 {
+    [Header("Buttons")]
     [SerializeField] private Button _fireballButton;
     [SerializeField] private Button _freezeButton;
     [SerializeField] private Button _explosionButton;
 
-    [SerializeField] private GameObject _fireball;
-    [SerializeField] private GameObject _freeze;
-    [SerializeField] private GameObject _explosion;
+    [Header("UI")]
+    [SerializeField] private Canvas _canvas;
 
+    [Header("AbilityImages")]
+    [SerializeField] private Image _fireball;
+    [SerializeField] private Image _freeze;
+    [SerializeField] private Image _explosion;
+
+    [Header("Audio")]
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private AudioClip _fireballAudio;
     [SerializeField] private AudioClip _freezeAudio;
@@ -25,6 +32,81 @@ public class EasyCoroutine : MonoBehaviour
         ablityData.CD_Explosion = 10f;
     }
 
+    private IEnumerator MoveFireball(Transform obj, Transform point)
+    {
+        while (obj.position - point.position != Vector3.zero)
+        {
+            obj.position = Vector3.MoveTowards(obj.position, point.position, 100f * Time.deltaTime);
+            yield return null;
+        }
+
+        Destroy(obj.gameObject);
+    }
+
+    private IEnumerator WaitDead(GameObject obj)
+    {
+        yield return new WaitForSeconds(3f);
+        Destroy(obj.gameObject);
+    }
+    private IEnumerator ReloadButton(Image image, float CD_Ability)
+    {
+        image.fillAmount = 0f;
+
+        while (image.fillAmount < 1)
+        {
+            image.fillAmount += (1 / CD_Ability) * Time.deltaTime;
+            yield return null;
+        }
+    }
+    private bool IsOnCooldown(ref float LT_used_Ability, float CD_Ability)
+    {
+        bool isOnCooldown = Time.time - LT_used_Ability >= CD_Ability;
+        if (isOnCooldown)
+        {
+            LT_used_Ability = Time.time;
+            return isOnCooldown;
+        } else
+        {
+            return isOnCooldown;
+        }
+    }
+
+    public void FireballRelease()
+    {
+        if (!IsOnCooldown(ref ablityData.LT_used_Fireball, ablityData.CD_Fireball)) return;
+
+        Image obj = Instantiate(_fireball, _canvas.transform);
+        _audioSource.PlayOneShot(_fireballAudio);
+        StartCoroutine(MoveFireball(obj.transform, _canvas.transform));
+        
+        StartCoroutine(ReloadButton(_fireballButton.GetComponent<Image>(), ablityData.CD_Fireball));
+    }
+
+    public void FreezeRelease()
+    {
+        if (!IsOnCooldown(ref ablityData.LT_used_Freeze, ablityData.CD_Freeze)) return;
+
+        Image obj = Instantiate(_freeze, _canvas.transform);
+        _audioSource.PlayOneShot(_freezeAudio);
+
+        StartCoroutine(WaitDead(obj.gameObject));
+
+        StartCoroutine(ReloadButton(_freezeButton.GetComponent<Image>(), ablityData.CD_Freeze));
+    }
+
+    public void ExplosionRelease()
+    {
+        if (!IsOnCooldown(ref ablityData.LT_used_Explosion, ablityData.CD_Explosion)) return;
+
+        Image obj = Instantiate(_explosion, _canvas.transform);
+        _audioSource.PlayOneShot(_explosionAudio);
+
+        StartCoroutine(WaitDead(obj.gameObject));
+
+        StartCoroutine(ReloadButton(_explosionButton.GetComponent<Image>(), ablityData.CD_Explosion));
+    }
+
+
     private void Start()
     {
         InitStructCuzUHaveVeryOldCSharp();
@@ -37,33 +119,6 @@ public class EasyCoroutine : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C)) { _explosionButton.onClick.Invoke(); }
 
 
-    }
-
-    private bool IsOnCooldown(float LT_used_Ability, float CD_Ability) => Time.time - LT_used_Ability >= CD_Ability;
-
-    public void FireballRelease()
-    {
-        if (IsOnCooldown(ablityData.LT_used_Fireball, ablityData.CD_Fireball)) {
-            ablityData.LT_used_Fireball = Time.time;
-            _audioSource.PlayOneShot(_fireballAudio);
-        }
-
-    }
-
-    public void FreezeRelease()
-    {
-        if (IsOnCooldown(ablityData.LT_used_Freeze, ablityData.CD_Freeze)) {
-            ablityData.LT_used_Freeze = Time.time;
-            _audioSource.PlayOneShot(_freezeAudio);
-        }
-    }
-
-    public void ExplosionRelease()
-    {
-                if (IsOnCooldown(ablityData.LT_used_Explosion, ablityData.CD_Explosion)) {
-            ablityData.LT_used_Explosion = Time.time;
-            _audioSource.PlayOneShot(_explosionAudio);
-        }
     }
 }
 
